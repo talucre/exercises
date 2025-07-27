@@ -1,4 +1,4 @@
-const Countries = ({countries}) => {
+const Countries = ({countries, setMatching}) => {
   
   if (!countries.length) {
     return null
@@ -9,11 +9,16 @@ const Countries = ({countries}) => {
       <div>Too many matches, specify another filter</div>
     )
   }
+  
+
 
   return (
     <div>
       {countries.map((country, index) => 
-        <div key={index}>{country.name.common}</div>
+        <div key={index}>
+          {country.name.common}
+          <button onClick={() => setMatching([country])}>show</button>
+        </div>
       )}
       </div>
   )

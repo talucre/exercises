@@ -1,10 +1,54 @@
+import { useEffect, useState } from "react"
+import axios from "axios"
+
 const Country = ({country}) => {
-  if (!country || !country.flags) {
+  const [weather, setWeather] = useState({})
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  
+  const api_key = import.meta.env.VITE_WEATHER_API_KEY
+
+  const baseURL = "https://api.openweathermap.org"
+
+  
+  useEffect(() => {
+    async function fetchWeather() {
+      try {
+        console.log("Start loading")
+        setLoading(true)
+        
+        const {lat, lon} = await axios
+          .get(`${baseURL}/geo/1.0/direct?q=${country.capital}&limit=1&appid=${api_key}`)
+          .then(response => response.data[0])
+          .catch(e => {throw new Error(`HTTP Error: ${e}`)})
+
+        const jsonWeather = await axios
+          .get(`${baseURL}/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${api_key}`)
+          .then(response => response.data)
+          .catch(e => {throw new Error(`HTTP Error: ${e}`)})
+        
+        setWeather(jsonWeather)
+        setError(null)
+
+        console.log(weather)
+      } catch(error) {
+        setError(error)
+        setWeather(null)
+      } finally {
+        console.log('completed loading')
+        setLoading(false)
+      }
+    }
+    fetchWeather()
+  }, [])
+
+  if (loading) {
     return <div>Loading...</div>
   }
-  
-  console.log(country);
-  console.log(country.flags.svg)
+
+  if (error) {
+    return <div>Error: {error}</div>
+  }
 
   return (
     <div>
@@ -18,6 +62,11 @@ const Country = ({country}) => {
         )}
         </ul>
         <img src={country.flags.svg} alt={country.flags.alt} />
+        <h2>Weather in {country.capital[0]}</h2>
+        <div>Temperature {(weather.main.temp - 273).toFixed(2) + " Celcius"}
+        </div>
+        <img src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`} alt="loading" />
+        <div>Wind {weather.wind.speed} m/s</div>
     </div>
   )
 }

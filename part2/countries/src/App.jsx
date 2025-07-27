@@ -46,7 +46,7 @@ const App = () => {
       />
       {matching.length === 1 ? 
         <Country country={matching[0]}/> : 
-        <CountriesList countries={matching}/>
+        <CountriesList countries={matching} setMatching={setMatching}/>
       }
       
       <div>
