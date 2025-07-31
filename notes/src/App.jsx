@@ -13,7 +13,8 @@ const App = () => {
   
 
   useEffect(() => {
-    noteService.getAll().then((initialNotes) => {
+    noteService.getAll()
+    .then((initialNotes) => {
       setNotes(initialNotes)
     })
   }, [])
