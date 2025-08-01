@@ -31,21 +31,22 @@ const App = () => {
   const updatePerson = (person) => {
     const replace = confirm(`${newName} already exists. Replace the old number with a new one?`)
     if (!replace) return
-        const newPerson = {...person, number: newNumber}
-        personService
-          .updatePerson(person.id, newPerson)
-          .then(returnedPerson => {
-              setPersons(persons.map(p => p.id !== person.id ? p : returnedPerson))
-              setSuccessMessage(`Updated ${returnedPerson.name}`)
-              setTimeout(() => setSuccessMessage(null), 5000)
-          })
-          .catch(error => {
-              setPersons(persons.filter(p => p.id !== person.id))
-              setErrorMessage(`
-                Information of ${person.name} has already been removed from server
-                `)
-              setTimeout(() => setErrorMessage(null), 5000)
-          })
+
+    const newPerson = {...person, number: newNumber}
+    personService
+      .updatePerson(person.id, newPerson)
+      .then(returnedPerson => {
+          setPersons(persons.map(p => p.id !== person.id ? p : returnedPerson))
+          setSuccessMessage(`Updated ${returnedPerson.name}`)
+          setTimeout(() => setSuccessMessage(null), 5000)
+      })
+      .catch(error => {
+          setPersons(persons.filter(p => p.id !== person.id))
+          setErrorMessage(`
+            Information of ${person.name} has already been removed from server
+            `)
+          setTimeout(() => setErrorMessage(null), 5000)
+      })
   }
 
   const addPerson = (event) => {
