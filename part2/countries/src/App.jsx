@@ -1,58 +1,38 @@
-import { useEffect, useState } from 'react'
 import axios from 'axios'
-import CountriesList from './components/CountriesList'
-import Country from './components/Country'
+import { useEffect, useState } from 'react'
+import CountryList from './components/CountriesList'
+
+const COUNTRY_API_URL = 'https://studies.cs.helsinki.fi/restcountries/'
 
 const App = () => {
-    const baseURL = 'https://studies.cs.helsinki.fi/restcountries/api'
-
-    const [countires, setCountries] = useState([])
-    const [filter, setFilter] = useState('')
-    const [matching, setMatching] = useState([])
+    const [search, setSearch] = useState('')
+    const [countries, setCountries] = useState([])
 
     useEffect(() => {
-        axios
-            .get(`${baseURL}/all`)
-            .then(response => {
-                setCountries(response.data)
-                setMatching(response.data)
-            })
-            .catch(error => {
-                console.error('Ошибка при загрузке данных:', error)
-            })
-    }, [])
-
-    useEffect(() => {
-        const match = countires.filter(item => {
-            return item.name.common.toLowerCase().includes(filter.toLowerCase())
+        axios.get(`${COUNTRY_API_URL}/api/all`).then(response => {
+            setCountries(response.data)
         })
-        setMatching(match)
-    }, [filter])
+    })
 
-    const handleFilterChange = event => {
-        setFilter(event.target.value)
-    }
+    const matchedCountries = countries.filter(c =>
+        c.name.common.toLowerCase().includes(search.toLowerCase())
+    )
 
     return (
         <>
-            <label htmlFor="country">find country</label>&nbsp;
-            <input
-                type="text"
-                name="country"
-                value={filter}
-                onChange={handleFilterChange}
-            />
-            {matching.length === 1 ? (
-                <Country country={matching[0]} />
-            ) : (
-                <CountriesList countries={matching} setMatching={setMatching} />
-            )}
             <div>
-                <h1>debug</h1>
-                <div>filter: {filter}</div>
-                <div>matching: {matching.length}</div>
-                <div>countires: {countires.length}</div>
+                find countries{' '}
+                <input
+                    value={search}
+                    onChange={event => setSearch(event.target.value)}
+                />
             </div>
+            {search === '' ? null : (
+                <CountryList
+                    countries={matchedCountries}
+                    showCountry={setSearch}
+                />
+            )}
         </>
     )
 }
