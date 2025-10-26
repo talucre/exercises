@@ -1,27 +1,22 @@
-const Countries = ({countries, setMatching}) => {
-  
-  if (!countries.length) {
-    return null
-  }
+const Countries = ({ countries, setMatching }) => {
+    if (!countries.length) {
+        return null
+    }
 
-  if (countries.length > 10) {
+    if (countries.length > 10) {
+        return <div>Too many matches, specify another filter</div>
+    }
+
     return (
-      <div>Too many matches, specify another filter</div>
-    )
-  }
-  
-
-
-  return (
-    <div>
-      {countries.map((country, index) => 
-        <div key={index}>
-          {country.name.common}
-          <button onClick={() => setMatching([country])}>show</button>
+        <div>
+            {countries.map((country, index) => (
+                <div key={index}>
+                    {country.name.common}
+                    <button onClick={() => setMatching([country])}>show</button>
+                </div>
+            ))}
         </div>
-      )}
-      </div>
-  )
+    )
 }
 
 export default Countries
