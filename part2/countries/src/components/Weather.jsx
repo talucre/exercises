@@ -8,25 +8,28 @@ const Weather = ({ country }) => {
     const [weather, setWeather] = useState(null)
 
     useEffect(() => {
-        const [lat, lon] = country.capitalInfo.latlng
-        const url = `${baseURL}/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${api_key}`
-        axios.get(url).then(response => setWeather(response.data))
-    })
+        const fetchWeather = async () => {
+            const [lat, lon] = country.capitalInfo.latlng
+            const response = await axios.get(
+                `${baseURL}/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${api_key}`
+            )
+            setWeather(response.data)
+        }
+
+        fetchWeather()
+    }, [])
 
     if (!weather) {
-        return null
+        return <h3>Loading...</h3>
     }
-
-    const weatherIcon = weather.weather[0].weatherIcon
-    const weatherIconUrl = `https://openweathermap.org/img/wn/${weatherIcon}@2x.png`
 
     return (
         <>
-            <h2>Weather in {country.capital}</h2>
+            <h2>Weather in {country.name.common}</h2>
             <div>Temperature {weather.main.temp} Celsius</div>
             <img
-                src={weatherIconUrl}
-                alt={`Weather icon of ${weather.weather[0].description}`}
+                src={`https://openweathermap.org/img/wn//${weather.weather[0].icon}@2x.png`}
+                alt=""
             />
             <div>Wind {weather.wind.speed} m/s</div>
         </>

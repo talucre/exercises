@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import CountryList from './components/CountriesList'
+import CountriesList from './components/CountriesList'
 
 const COUNTRY_API_URL = 'https://studies.cs.helsinki.fi/restcountries/'
 
@@ -9,30 +9,34 @@ const App = () => {
     const [countries, setCountries] = useState([])
 
     useEffect(() => {
-        axios.get(`${COUNTRY_API_URL}/api/all`).then(response => {
+        const fetchCountries = async () => {
+            const response = await axios.get(`${COUNTRY_API_URL}/api/all`)
             setCountries(response.data)
-        })
-    })
+        }
+
+        fetchCountries()
+    }, [])
 
     const matchedCountries = countries.filter(c =>
-        c.name.common.toLowerCase().includes(search.toLowerCase())
+        c.name.common.toLocaleLowerCase().includes(search.toLocaleLowerCase())
     )
+
+    console.log(matchedCountries)
 
     return (
         <>
-            <div>
+            <label>
                 find countries{' '}
                 <input
+                    type="text"
                     value={search}
                     onChange={event => setSearch(event.target.value)}
                 />
-            </div>
-            {search === '' ? null : (
-                <CountryList
-                    countries={matchedCountries}
-                    showCountry={setSearch}
-                />
-            )}
+            </label>
+            <CountriesList
+                countries={matchedCountries}
+                showCountry={setSearch}
+            />
         </>
     )
 }
