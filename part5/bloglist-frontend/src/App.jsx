@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
-import LoginForm from './components/LoginForm'
-import CreateBlogForm from './components/CreateBlogForm'
+import LoginForm from './components/forms/LoginForm'
+import CreateBlogForm from './components/forms/CreateBlogForm'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 
 const App = () => {
     const [blogs, setBlogs] = useState([])
@@ -23,14 +24,16 @@ const App = () => {
         }
     }, [])
 
-    if (user === null) {
-        return <LoginForm setUser={setUser} setNotification={setNotification} />
-    }
-
     const handleLogout = () => {
         window.localStorage.removeItem('loggedBloglistUser')
         setUser(null)
         blogService.setToken(null)
+    }
+
+    const createBlogFormRef = useRef()
+
+    if (user === null) {
+        return <LoginForm setUser={setUser} setNotification={setNotification} />
     }
 
     return (
@@ -43,11 +46,17 @@ const App = () => {
             </div>
 
             {user && (
-                <CreateBlogForm
-                    blogs={blogs}
-                    setBlogs={setBlogs}
-                    setNotification={setNotification}
-                />
+                <Togglable
+                    buttonLabel="create new blog"
+                    ref={createBlogFormRef}
+                >
+                    <CreateBlogForm
+                        blogs={blogs}
+                        setBlogs={setBlogs}
+                        setNotification={setNotification}
+                        ref={createBlogFormRef}
+                    />
+                </Togglable>
             )}
 
             {blogs.map(blog => (

@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import loginService from '../services/login'
-import blogService from '../services/blogs'
-import Notification from './Notification'
+import loginService from '../../services/login'
+import blogService from '../../services/blogs'
+import Notification from '../Notification'
 
 const LoginForm = ({ setUser }) => {
     const [username, setUsername] = useState('')
