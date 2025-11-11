@@ -32,6 +32,31 @@ const App = () => {
 
     const createBlogFormRef = useRef()
 
+    const addBlog = blogObject => {
+        createBlogFormRef.current.toggleVisibility()
+        blogService
+            .create(blogObject)
+            .then(returnedBlog => {
+                setNotification({
+                    title: `a new blog ${blogObject.title} by ${blogObject.author} added`,
+                    isError: false,
+                })
+                setTimeout(() => {
+                    setNotification(null)
+                }, 5000)
+                setBlogs(blogs.concat(returnedBlog))
+            })
+            .catch(() => {
+                setNotification({
+                    title: 'Something went wrong',
+                    isError: true,
+                })
+                setTimeout(() => {
+                    setNotification(null)
+                }, 5000)
+            })
+    }
+
     if (user === null) {
         return <LoginForm setUser={setUser} setNotification={setNotification} />
     }
@@ -51,10 +76,8 @@ const App = () => {
                     ref={createBlogFormRef}
                 >
                     <CreateBlogForm
-                        blogs={blogs}
-                        setBlogs={setBlogs}
+                        createBlog={addBlog}
                         setNotification={setNotification}
-                        ref={createBlogFormRef}
                     />
                 </Togglable>
             )}
