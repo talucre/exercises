@@ -6,6 +6,8 @@ import CreateBlogForm from './components/forms/CreateBlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 
+// TODO rewrite all notification related code for using Context
+
 const App = () => {
     const [blogs, setBlogs] = useState([])
     const [user, setUser] = useState(null)
@@ -83,7 +85,11 @@ const App = () => {
             )}
 
             {blogs.map(blog => (
-                <Blog key={blog.id} blog={blog} />
+                <Blog
+                    key={blog.id}
+                    blog={blog}
+                    setNotification={setNotification}
+                />
             ))}
         </div>
     )
