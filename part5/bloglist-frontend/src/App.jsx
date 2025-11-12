@@ -1,20 +1,22 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useContext } from 'react'
+import NotificationContext from './components/contexts/NotificationContext'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import LoginForm from './components/forms/LoginForm'
 import CreateBlogForm from './components/forms/CreateBlogForm'
-import Notification from './components/Notification'
 import Togglable from './components/Togglable'
-
-// TODO rewrite all notification related code for using Context
 
 const App = () => {
     const [blogs, setBlogs] = useState([])
     const [user, setUser] = useState(null)
-    const [notification, setNotification] = useState(null)
+    const { showNotification } = useContext(NotificationContext)
 
     useEffect(() => {
-        blogService.getAll().then(blogs => setBlogs(blogs))
+        const fetchBlogs = async () => {
+            const blogs = await blogService.getAll()
+            setBlogs(blogs)
+        }
+        fetchBlogs()
     }, [])
 
     useEffect(() => {
@@ -34,39 +36,26 @@ const App = () => {
 
     const createBlogFormRef = useRef()
 
-    const addBlog = blogObject => {
+    const addBlog = async blogObject => {
+        try {
+            const returnedBlog = await blogService.create(blogObject)
+            showNotification(
+                `a new blog ${blogObject.title} by ${blogObject.author} added`
+            )
+            setBlogs(blogs.concat(returnedBlog))
+        } catch {
+            showNotification('Something went wrong', 'error')
+        }
         createBlogFormRef.current.toggleVisibility()
-        blogService
-            .create(blogObject)
-            .then(returnedBlog => {
-                setNotification({
-                    title: `a new blog ${blogObject.title} by ${blogObject.author} added`,
-                    isError: false,
-                })
-                setTimeout(() => {
-                    setNotification(null)
-                }, 5000)
-                setBlogs(blogs.concat(returnedBlog))
-            })
-            .catch(() => {
-                setNotification({
-                    title: 'Something went wrong',
-                    isError: true,
-                })
-                setTimeout(() => {
-                    setNotification(null)
-                }, 5000)
-            })
     }
 
     if (user === null) {
-        return <LoginForm setUser={setUser} setNotification={setNotification} />
+        return <LoginForm setUser={setUser} />
     }
 
     return (
         <div>
             <h2>blogs</h2>
-            <Notification notification={notification} />
             <div>
                 {user.name} logged in{' '}
                 <button onClick={handleLogout}>logout</button>
@@ -77,19 +66,12 @@ const App = () => {
                     buttonLabel="create new blog"
                     ref={createBlogFormRef}
                 >
-                    <CreateBlogForm
-                        createBlog={addBlog}
-                        setNotification={setNotification}
-                    />
+                    <CreateBlogForm createBlog={addBlog} />
                 </Togglable>
             )}
 
             {blogs.map(blog => (
-                <Blog
-                    key={blog.id}
-                    blog={blog}
-                    setNotification={setNotification}
-                />
+                <Blog key={blog.id} blog={blog} />
             ))}
         </div>
     )

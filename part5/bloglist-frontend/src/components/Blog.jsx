@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import blogService from '../services/blogs'
 
-const Blog = ({ blog, setNotification }) => {
+const Blog = ({ blog }) => {
     const [showDetails, setShowDetails] = useState(false)
     const [likes, setLikes] = useState(blog.likes)
     const showWhenVisible = { display: showDetails ? '' : 'none' }
@@ -24,13 +24,13 @@ const Blog = ({ blog, setNotification }) => {
             await blogService.update(blog.id, { likes: updatedLikes })
             setLikes(updatedLikes)
         } catch {
-            setNotification({
-                title: 'something went wrong',
-                isError: true,
-            })
-            setTimeout(() => {
-                setNotification(null)
-            }, 5000)
+            // setNotification({
+            //     title: 'something went wrong',
+            //     isError: true,
+            // })
+            // setTimeout(() => {
+            //     setNotification(null)
+            // }, 5000)
         }
     }
 

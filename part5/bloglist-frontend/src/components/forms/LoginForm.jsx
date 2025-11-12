@@ -1,22 +1,17 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
 import loginService from '../../services/login'
 import blogService from '../../services/blogs'
 import Notification from '../Notification'
+import NotificationContext from '../contexts/NotificationContext'
 
 const LoginForm = ({ setUser }) => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
-    const [notification, setNotification] = useState(null)
+    const { showNotification } = useContext(NotificationContext)
 
     const checkForm = () => {
         if (!username || !password) {
-            setNotification({
-                title: 'all fields should be filled',
-                isError: true,
-            })
-            setTimeout(() => {
-                setNotification(null)
-            }, 5000)
+            showNotification('all fields should be filled', 'error')
             return false
         }
         return true
@@ -39,20 +34,13 @@ const LoginForm = ({ setUser }) => {
             setUsername('')
             setPassword('')
         } catch {
-            setNotification({
-                title: 'wrong username or password',
-                isError: true,
-            })
-            setTimeout(() => {
-                setNotification(null)
-            }, 5000)
+            showNotification('wrong username or password', 'error')
         }
     }
 
     return (
         <div>
             <h2>Log in to application</h2>
-            <Notification notification={notification} />
             <form onSubmit={handleLogin}>
                 <div>
                     <label>

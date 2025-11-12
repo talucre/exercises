@@ -1,19 +1,15 @@
-import { useState } from 'react'
+import { useContext, useState } from 'react'
+import NotificationContext from '../contexts/NotificationContext'
 
-const CreateBlogForm = ({ createBlog, setNotification }) => {
+const CreateBlogForm = ({ createBlog }) => {
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [url, setUrl] = useState('')
+    const { showNotification } = useContext(NotificationContext)
 
     const checkForm = () => {
         if (!title || !author || !url) {
-            setNotification({
-                title: 'all fields should be filled',
-                isError: true,
-            })
-            setTimeout(() => {
-                setNotification(null)
-            }, 5000)
+            showNotification('all fields should be filled', 'error')
             return false
         }
         return true
