@@ -6,6 +6,9 @@ import LoginForm from './components/forms/LoginForm'
 import CreateBlogForm from './components/forms/CreateBlogForm'
 import Togglable from './components/Togglable'
 
+// TODO перенести всю логику из компонентов сюда
+// TODO проверить blog delete на беке
+
 const App = () => {
     const [blogs, setBlogs] = useState([])
     const [user, setUser] = useState(null)
@@ -49,6 +52,19 @@ const App = () => {
         createBlogFormRef.current.toggleVisibility()
     }
 
+    const handleDeleteClick = async ({ id, title }) => {
+        if (!window.confirm(`Remove blog ${title}`)) return
+
+        try {
+            await blogService.deleteBlog(id)
+            setBlogs(blogs.filter(b => b.id !== id))
+        } catch {
+            showNotification('something went wrong', 'error')
+        }
+    }
+
+    const sortedBlogs = blogs.slice().sort((a, b) => b.likes - a.likes)
+
     if (user === null) {
         return <LoginForm setUser={setUser} />
     }
@@ -70,8 +86,13 @@ const App = () => {
                 </Togglable>
             )}
 
-            {blogs.map(blog => (
-                <Blog key={blog.id} blog={blog} />
+            {sortedBlogs.map(blog => (
+                <Blog
+                    key={blog.id}
+                    blog={blog}
+                    user={user}
+                    handleDeleteClick={() => handleDeleteClick(blog)}
+                />
             ))}
         </div>
     )
