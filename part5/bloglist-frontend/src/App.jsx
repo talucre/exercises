@@ -2,11 +2,11 @@ import { useState, useEffect, useRef, useContext } from 'react'
 import NotificationContext from './components/contexts/NotificationContext'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
+import loginService from './services/login'
 import LoginForm from './components/forms/LoginForm'
 import CreateBlogForm from './components/forms/CreateBlogForm'
 import Togglable from './components/Togglable'
 
-// TODO перенести всю логику из компонентов сюда
 // TODO проверить blog delete на беке
 
 const App = () => {
@@ -31,6 +31,21 @@ const App = () => {
         }
     }, [])
 
+    const handleLogin = async credentials => {
+        try {
+            const user = await loginService.login(credentials)
+            blogService.setToken(user.token)
+            setUser(user)
+
+            window.localStorage.setItem(
+                'loggedBloglistUser',
+                JSON.stringify(user)
+            )
+        } catch {
+            showNotification('wrong username or password', 'error')
+        }
+    }
+
     const handleLogout = () => {
         window.localStorage.removeItem('loggedBloglistUser')
         setUser(null)
@@ -52,12 +67,26 @@ const App = () => {
         createBlogFormRef.current.toggleVisibility()
     }
 
-    const handleDeleteClick = async ({ id, title }) => {
-        if (!window.confirm(`Remove blog ${title}`)) return
+    const handleDeleteClick = async blog => {
+        if (!window.confirm(`Remove blog ${blog.title}`)) return
 
         try {
-            await blogService.deleteBlog(id)
-            setBlogs(blogs.filter(b => b.id !== id))
+            await blogService.deleteBlog(blog.id)
+            setBlogs(blogs.filter(b => b.id !== blog.id))
+        } catch {
+            showNotification('something went wrong', 'error')
+        }
+    }
+
+    const handleLikeClick = async blog => {
+        try {
+            const updatedLikes = blog.likes + 1
+            await blogService.update(blog.id, { likes: updatedLikes })
+            setBlogs(prevBlogs =>
+                prevBlogs.map(b =>
+                    b.id === blog.id ? { ...b, likes: updatedLikes } : b
+                )
+            )
         } catch {
             showNotification('something went wrong', 'error')
         }
@@ -66,7 +95,7 @@ const App = () => {
     const sortedBlogs = blogs.slice().sort((a, b) => b.likes - a.likes)
 
     if (user === null) {
-        return <LoginForm setUser={setUser} />
+        return <LoginForm handleLogin={handleLogin} />
     }
 
     return (
@@ -92,6 +121,7 @@ const App = () => {
                     blog={blog}
                     user={user}
                     handleDeleteClick={() => handleDeleteClick(blog)}
+                    handleLikeClick={() => handleLikeClick(blog)}
                 />
             ))}
         </div>

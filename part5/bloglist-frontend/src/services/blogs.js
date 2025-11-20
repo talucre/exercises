@@ -26,7 +26,6 @@ const update = async (id, data) => {
 }
 
 const deleteBlog = async id => {
-    // can't name a variable 'delete'
     const config = {
         headers: { Authorization: token },
     }

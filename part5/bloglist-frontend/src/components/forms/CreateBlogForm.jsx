@@ -15,11 +15,11 @@ const CreateBlogForm = ({ createBlog }) => {
         return true
     }
 
-    const addBlog = event => {
+    const addBlog = async event => {
         event.preventDefault()
         if (!checkForm()) return
 
-        createBlog({ title, author, url })
+        await createBlog({ title, author, url })
 
         setTitle('')
         setAuthor('')

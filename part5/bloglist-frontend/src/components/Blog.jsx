@@ -1,12 +1,8 @@
-import { useContext, useState } from 'react'
-import blogService from '../services/blogs'
-import NotificationContext from './contexts/NotificationContext'
+import { useState } from 'react'
 
-const Blog = ({ blog, user, handleDeleteClick }) => {
+const Blog = ({ blog, user, handleDeleteClick, handleLikeClick }) => {
     const [showDetails, setShowDetails] = useState(false)
-    const [likes, setLikes] = useState(blog.likes)
     const showWhenVisible = { display: showDetails ? '' : 'none' }
-    const { showNotification } = useContext(NotificationContext)
 
     const blogStyle = {
         paddingTop: 10,
@@ -20,16 +16,6 @@ const Blog = ({ blog, user, handleDeleteClick }) => {
         setShowDetails(!showDetails)
     }
 
-    const handleLikeClick = async () => {
-        try {
-            const updatedLikes = likes + 1
-            await blogService.update(blog.id, { likes: updatedLikes })
-            setLikes(updatedLikes)
-        } catch {
-            showNotification('something went wrong', 'error')
-        }
-    }
-
     return (
         <div style={blogStyle}>
             {blog.title} {blog.author}
@@ -37,7 +23,7 @@ const Blog = ({ blog, user, handleDeleteClick }) => {
             <div style={showWhenVisible}>
                 <div>{blog.url}</div>
                 <div>
-                    likes {likes}
+                    likes {blog.likes}
                     <button onClick={handleLikeClick}>like</button>
                 </div>
                 <div>{blog.user.name}</div>
