@@ -3,7 +3,6 @@ import { useState } from 'react'
 const Blog = ({ blog, user, handleDeleteClick, handleLikeClick }) => {
     const [showDetails, setShowDetails] = useState(false)
     const showWhenVisible = { display: showDetails ? '' : 'none' }
-
     const blogStyle = {
         paddingTop: 10,
         paddingLeft: 2,
@@ -20,7 +19,7 @@ const Blog = ({ blog, user, handleDeleteClick, handleLikeClick }) => {
         <div style={blogStyle}>
             {blog.title} {blog.author}
             <button onClick={toggleVisible}>view</button>
-            <div style={showWhenVisible}>
+            <div className="blog__details" style={showWhenVisible}>
                 <div>{blog.url}</div>
                 <div>
                     likes {blog.likes}
