@@ -4,7 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 
 export default [
-    { ignores: ['dist'] },
+    { ignores: ['dist', 'coverage'] },
     {
         files: ['**/*.{js,jsx}'],
         languageOptions: {
@@ -37,6 +37,12 @@ export default [
             'object-curly-spacing': ['error', 'always'],
             'arrow-spacing': ['error', { before: true, after: true }],
             'no-console': 'off',
+        },
+    },
+    {
+        files: ['**/*.test.{js,jsx}'],
+        languageOptions: {
+            ...globals.vitest,
         },
     },
 ]

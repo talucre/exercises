@@ -1,8 +1,8 @@
 {
-    "tabWidth": 4,
-    "useTabs": false,
-    "semi": false,
-    "singleQuote": true,
-    "objectWrap": "collapse",
-    "arrowParens": "avoid"
+  "tabWidth": 4,
+  "useTabs": false,
+  "semi": false,
+  "singleQuote": true,
+  "objectWrap": "collapse",
+  "arrowParens": "avoid"
 }

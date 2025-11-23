@@ -83,14 +83,25 @@ const App = () => {
         </Togglable>
     )
 
+    const noteFormRef = useRef()
+
     const addNote = noteObject => {
         noteFormRef.current.toggleVisibility()
-        noteService.create(noteObject).then(returnedNote => {
-            setNotes(notes.concat(returnedNote))
-        })
+        noteService
+            .create(noteObject)
+            .then(returnedNote => {
+                setNotes(notes.concat(returnedNote))
+            })
+            .catch(err => {
+                if (err.status === 401) {
+                    setErrorMessage('Token exprired, login again')
+                    setTimeout(() => {
+                        setErrorMessage(null)
+                    }, 5000)
+                    handleLogout()
+                }
+            })
     }
-
-    const noteFormRef = useRef()
 
     const noteForm = () => (
         <Togglable buttonLabel="new note" ref={noteFormRef}>

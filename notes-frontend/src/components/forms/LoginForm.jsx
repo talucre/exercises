@@ -24,7 +24,7 @@ const LoginForm = ({ handleLogin }) => {
                         <input
                             type="text"
                             value={username}
-                            onChange={({ target }) => setUsername(target.value)}
+                            onChange={event => setUsername(event.target.value)}
                         />
                     </label>
                 </div>
@@ -34,7 +34,7 @@ const LoginForm = ({ handleLogin }) => {
                         <input
                             type="password"
                             value={password}
-                            onChange={({ target }) => setPassword(target.value)}
+                            onChange={event => setPassword(event.target.value)}
                         />
                     </label>
                 </div>
