@@ -1,3 +1,4 @@
+const mongoose = require('mongoose')
 const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const middleware = require('../utils/middleware')
@@ -23,9 +24,12 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
         likes: body.likes,
         user: user._id,
     })
+
     const savedBlog = await blog.save()
     user.blogs = user.blogs.concat(savedBlog._id)
     await user.save()
+
+    await savedBlog.populate('user', { username: 1, name: 1 })
 
     response.status(201).json(savedBlog)
 })
@@ -44,7 +48,9 @@ blogsRouter.delete(
         const blog = await Blog.findById(request.params.id)
 
         if (blog.user.toString() === user._id.toString()) {
-            await Blog.findOneAndDelete(request.params.id)
+            const id = new mongoose.Types.ObjectId(request.params.id)
+
+            await Blog.deleteOne({ _id: id })
             response.status(204).end()
         } else {
             response

@@ -42,7 +42,7 @@ const App = () => {
                 JSON.stringify(user)
             )
         } catch {
-            showNotification('wrong username or password', 'error')
+            showNotification('wrong credentials', 'error')
         }
     }
 
@@ -68,7 +68,7 @@ const App = () => {
     }
 
     const handleDeleteClick = async blog => {
-        if (!window.confirm(`Remove blog ${blog.title}`)) return
+        if (!window.confirm(`Remove blog ${blog.title}?`)) return
 
         try {
             await blogService.deleteBlog(blog.id)
