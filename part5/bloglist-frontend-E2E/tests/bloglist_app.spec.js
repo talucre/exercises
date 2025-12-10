@@ -1,5 +1,5 @@
 const { test, describe, expect, beforeEach } = require('@playwright/test')
-const { loginWith, createBlog } = require('./helper')
+const { loginWith, createBlog, likeBlog } = require('./helper')
 
 describe('Blogslit app', () => {
     beforeEach(async ({ page, request }) => {
@@ -9,6 +9,13 @@ describe('Blogslit app', () => {
                 name: 'test',
                 username: 'test',
                 password: 'test',
+            },
+        })
+        await request.post('/api/users', {
+            data: {
+                name: 'test2',
+                username: 'test2',
+                password: 'test2',
             },
         })
         await page.goto('/')
@@ -93,6 +100,46 @@ describe('Blogslit app', () => {
                     )
                     await dialog.accept()
                 })
+            })
+
+            describe('from view of another user', () => {
+                beforeEach(async ({ page }) => {
+                    await page.getByRole('button', { name: 'logout' }).click()
+                    await loginWith(page, 'test2', 'test2')
+                })
+
+                test('no delete button of another users blogs', async ({
+                    page,
+                }) => {
+                    const blog = page.locator('.blog')
+                    await blog.getByRole('button', { name: 'view' }).click()
+
+                    await expect(
+                        blog.getByRole('button', { name: 'delete' })
+                    ).not.toBeVisible()
+                })
+            })
+        })
+
+        describe('when several blogs', () => {
+            beforeEach(async ({ page }) => {
+                await createBlog(page, 'blog 1', 'playwright', 'test')
+                await createBlog(page, 'blog 2', 'playwright', 'test')
+                await createBlog(page, 'blog 3', 'playwright', 'test')
+            })
+
+            test('blogs are arranged in the order according to the likes', async ({
+                page,
+            }) => {
+                await likeBlog(page, 'blog 1', 1)
+                await likeBlog(page, 'blog 2', 5)
+                await likeBlog(page, 'blog 3', 3)
+
+                const blogs = await page.locator('.blog').all()
+
+                await expect(blogs[0]).toContainText('blog 2')
+                await expect(blogs[1]).toContainText('blog 3')
+                await expect(blogs[2]).toContainText('blog 1')
             })
         })
     })
