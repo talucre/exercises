@@ -30,7 +30,7 @@ test('<Blog /> at start renders only title and author', () => {
     expect(details).not.toBeVisible()
 })
 
-test('<Blog /> after clicking the button, details are dispayed', async () => {
+test('<Blog /> after clicking the button, the details are displayed', async () => {
     const user = userEvent.setup()
     const { container } = render(<Blog blog={blog} user={user} />)
     const button = screen.getByText('view')
@@ -40,7 +40,7 @@ test('<Blog /> after clicking the button, details are dispayed', async () => {
     expect(details).toBeVisible()
 })
 
-test('<Blog /> calling handleLikeClick twice if the like button pressed twice', async () => {
+test('<Blog /> calling handleLikeClick twice if the like button is clicked twice', async () => {
     const handleLikeClick = vi.fn()
     const user = userEvent.setup()
 
