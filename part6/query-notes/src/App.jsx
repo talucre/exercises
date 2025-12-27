@@ -2,19 +2,24 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { createNote, getNotes, updateNote } from './requests'
 
 const App = () => {
+    console.log('rerender')
     const queryClient = useQueryClient()
 
     const newNoteMutation = useMutation({
         mutationFn: createNote,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['notes'] })
+        onSuccess: newNote => {
+            const notes = queryClient.getQueryData(['notes'])
+            queryClient.setQueryData(['notes'], notes.concat(newNote))
         },
     })
 
     const updateNoteMutation = useMutation({
         mutationFn: updateNote,
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['notes'] })
+        onSuccess: updatedNote => {
+            const notes = queryClient
+                .getQueryData(['notes'])
+                .map(n => (n.id !== updatedNote.id ? n : updatedNote))
+            queryClient.setQueryData(['notes'], notes)
         },
     })
 
@@ -33,8 +38,6 @@ const App = () => {
         queryKey: ['notes'],
         queryFn: getNotes,
     })
-
-    console.log(JSON.parse(JSON.stringify(result)))
 
     if (result.isLoading) {
         return <div>loading data...</div>
