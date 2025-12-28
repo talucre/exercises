@@ -4,7 +4,8 @@ export const getAll = async () => {
     const response = await fetch(baseUrl)
 
     if (!response.ok) {
-        throw new Error('Failed to fetch anecdotes')
+        const { error } = await response.json()
+        throw new Error(error)
     }
 
     return await response.json()
@@ -20,7 +21,8 @@ export const createAnecdote = async newAnecdote => {
     const response = await fetch(baseUrl, options)
 
     if (!response.ok) {
-        throw new Error('Failed to create anecdote')
+        const { error } = await response.json()
+        throw new Error(error)
     }
 
     return await response.json()
@@ -36,7 +38,8 @@ export const voteForAnecdote = async anecdote => {
     const response = await fetch(`${baseUrl}/${anecdote.id}`, options)
 
     if (!response.ok) {
-        throw new Error('Failed to vote for anecdote')
+        const { error } = await response.json()
+        throw new Error(error)
     }
 
     return await response.json()

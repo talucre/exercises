@@ -2,9 +2,12 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import AnecdoteForm from './components/AnecdoteForm'
 import Notification from './components/Notification'
 import { getAll, voteForAnecdote } from './requests'
+import { useContext } from 'react'
+import NotificationContext from './NotificationContext'
 
 const App = () => {
     const queryClient = useQueryClient()
+    const { showNotification } = useContext(NotificationContext)
 
     const {
         isPending,
@@ -24,6 +27,7 @@ const App = () => {
                 .map(a => (a.id !== updatedAnecdote.id ? a : updatedAnecdote))
 
             queryClient.setQueryData(['anecdotes'], anecdotes)
+            showNotification(`anecdote ${updatedAnecdote.content} voted`)
         },
     })
 
