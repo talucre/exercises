@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { notify } from './notificationReducer'
 
 export const blogApi = createApi({
     reducerPath: 'blogApi',
@@ -42,25 +43,33 @@ export const blogApi = createApi({
                 method: 'PUT',
                 body: patch,
             }),
-            async onQueryStarted(
-                { id, ...patch },
-                { dispatch, queryFulfilled }
-            ) {
-                const updated = await queryFulfilled
-                dispatch(
-                    blogApi.util.updateQueryData(
-                        'getBlogs',
-                        undefined,
-                        draft => {
-                            const index = draft.findIndex(
-                                blog => blog.id === id
+            async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
+                try {
+                    const updated = await queryFulfilled
+                    if (response && response.data) {
+                        dispatch(
+                            blogApi.util.updateQueryData(
+                                'getBlogs',
+                                undefined,
+                                draft => {
+                                    const index = draft.findIndex(
+                                        blog => blog.id === id
+                                    )
+                                    if (index !== -1) {
+                                        draft[index] = updated.data
+                                    }
+                                }
                             )
-                            if (index !== -1) {
-                                draft[index] = updated.data
-                            }
-                        }
+                        )
+                    }
+                } catch {
+                    dispatch(
+                        notify({
+                            message: 'something went wrong',
+                            type: 'error',
+                        })
                     )
-                )
+                }
             },
         }),
         removeBlog: build.mutation({
