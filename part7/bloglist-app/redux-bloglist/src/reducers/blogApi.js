@@ -42,7 +42,26 @@ export const blogApi = createApi({
                 method: 'PUT',
                 body: patch,
             }),
-            invalidatesTags: (result, error, { id }) => [{ type: 'Blog', id }],
+            async onQueryStarted(
+                { id, ...patch },
+                { dispatch, queryFulfilled }
+            ) {
+                const updated = await queryFulfilled
+                dispatch(
+                    blogApi.util.updateQueryData(
+                        'getBlogs',
+                        undefined,
+                        draft => {
+                            const index = draft.findIndex(
+                                blog => blog.id === id
+                            )
+                            if (index !== -1) {
+                                draft[index] = updated.data
+                            }
+                        }
+                    )
+                )
+            },
         }),
         removeBlog: build.mutation({
             query: id => ({
