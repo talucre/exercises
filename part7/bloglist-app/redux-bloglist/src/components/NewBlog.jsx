@@ -1,9 +1,13 @@
 import { useState } from 'react'
+import { useCreateBlogMutation } from '../reducers/blogApi'
+import { useDispatch } from 'react-redux'
 
 const NewBlog = ({ doCreate }) => {
     const [title, setTitle] = useState('')
     const [url, setUrl] = useState('')
     const [author, setAuthor] = useState('')
+    const [createBlog] = useCreateBlogMutation()
+    const dispatch = useDispatch()
 
     const handleTitleChange = event => {
         setTitle(event.target.value)
@@ -17,12 +21,18 @@ const NewBlog = ({ doCreate }) => {
         setAuthor(event.target.value)
     }
 
-    const handleSubmit = event => {
+    const handleSubmit = async event => {
         event.preventDefault()
-        doCreate({ title, url, author })
-        setAuthor('')
-        setTitle('')
-        setUrl('')
+        try {
+            await createBlog({ title, url, author }).unwrap()
+            setAuthor('')
+            setTitle('')
+            setUrl('')
+        } catch {
+            dispatch(
+                notify({ message: 'failed to create blog', type: 'error' })
+            )
+        }
     }
 
     return (

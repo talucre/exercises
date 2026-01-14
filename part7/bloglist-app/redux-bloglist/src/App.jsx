@@ -4,13 +4,13 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import storage from './services/storage'
 import Login from './components/Login'
-import Blog from './components/Blog'
+import Blog from './components/BlogsList'
 import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import { useDispatch } from 'react-redux'
 import { notify } from './reducers/notificationReducer'
-
+import BlogsList from './components/BlogsList'
 const App = () => {
     const [blogs, setBlogs] = useState([])
     const [user, setUser] = useState(null)
@@ -41,32 +41,6 @@ const App = () => {
         }
     }
 
-    const handleCreate = async blog => {
-        const newBlog = await blogService.create(blog)
-        setBlogs(blogs.concat(newBlog))
-        dispatch(
-            notify({
-                message: `Blog created: ${newBlog.title}, ${newBlog.author}`,
-            })
-        )
-        blogFormRef.current.toggleVisibility()
-    }
-
-    const handleVote = async blog => {
-        console.log('updating', blog)
-        const updatedBlog = await blogService.update(blog.id, {
-            ...blog,
-            likes: blog.likes + 1,
-        })
-
-        dispatch(
-            notify({
-                message: `You liked ${updatedBlog.title} by ${updatedBlog.author}`,
-            })
-        )
-        setBlogs(blogs.map(b => (b.id === blog.id ? updatedBlog : b)))
-    }
-
     const handleLogout = () => {
         setUser(null)
         storage.removeUser()
@@ -76,19 +50,6 @@ const App = () => {
                 message: `Bye, ${user.name}!`,
             })
         )
-    }
-
-    const handleDelete = async blog => {
-        if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-            await blogService.remove(blog.id)
-            setBlogs(blogs.filter(b => b.id !== blog.id))
-            notify(``)
-            dispatch(
-                notify({
-                    message: `Blog ${blog.title}, by ${blog.author} removed`,
-                })
-            )
-        }
     }
 
     if (!user) {
@@ -101,8 +62,6 @@ const App = () => {
         )
     }
 
-    const byLikes = (a, b) => b.likes - a.likes
-
     return (
         <div>
             <h2>blogs</h2>
@@ -112,16 +71,9 @@ const App = () => {
                 <button onClick={handleLogout}>logout</button>
             </div>
             <Togglable buttonLabel="create new blog" ref={blogFormRef}>
-                <NewBlog doCreate={handleCreate} />
+                <NewBlog />
             </Togglable>
-            {blogs.sort(byLikes).map(blog => (
-                <Blog
-                    key={blog.id}
-                    blog={blog}
-                    handleVote={handleVote}
-                    handleDelete={handleDelete}
-                />
-            ))}
+            <BlogsList />
         </div>
     )
 }
