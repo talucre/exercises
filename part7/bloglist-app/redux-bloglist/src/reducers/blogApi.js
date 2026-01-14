@@ -45,7 +45,7 @@ export const blogApi = createApi({
             }),
             async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
                 try {
-                    const updated = await queryFulfilled
+                    const response = await queryFulfilled
                     if (response && response.data) {
                         dispatch(
                             blogApi.util.updateQueryData(
@@ -56,13 +56,14 @@ export const blogApi = createApi({
                                         blog => blog.id === id
                                     )
                                     if (index !== -1) {
-                                        draft[index] = updated.data
+                                        draft[index] = response.data
                                     }
                                 }
                             )
                         )
                     }
-                } catch {
+                } catch (e) {
+                    console.log(e)
                     dispatch(
                         notify({
                             message: 'something went wrong',
