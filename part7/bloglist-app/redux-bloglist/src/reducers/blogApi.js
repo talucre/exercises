@@ -1,13 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
-import { notify } from './notificationReducer'
 
 export const blogApi = createApi({
     reducerPath: 'blogApi',
     baseQuery: fetchBaseQuery({
         baseUrl: '/api/blogs',
-        prepareHeaders: (headers, { getState }) => {
-            const user = localStorage.getItem('blogUserKey')
-            const { token } = user ? JSON.parse(user) : null
+        prepareHeaders: headers => {
+            const token = localStorage.getItem('token')
             if (token) {
                 headers.set('Authorization', `Bearer ${token}`)
             }
@@ -44,31 +42,21 @@ export const blogApi = createApi({
                 body: patch,
             }),
             async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
-                try {
-                    const response = await queryFulfilled
-                    if (response && response.data) {
-                        dispatch(
-                            blogApi.util.updateQueryData(
-                                'getBlogs',
-                                undefined,
-                                draft => {
-                                    const index = draft.findIndex(
-                                        blog => blog.id === id
-                                    )
-                                    if (index !== -1) {
-                                        draft[index] = response.data
-                                    }
-                                }
-                            )
-                        )
-                    }
-                } catch (e) {
-                    console.log(e)
+                const response = await queryFulfilled
+                if (response && response.data) {
                     dispatch(
-                        notify({
-                            message: 'something went wrong',
-                            type: 'error',
-                        })
+                        blogApi.util.updateQueryData(
+                            'getBlogs',
+                            undefined,
+                            draft => {
+                                const index = draft.findIndex(
+                                    blog => blog.id === id
+                                )
+                                if (index !== -1) {
+                                    draft[index] = response.data
+                                }
+                            }
+                        )
                     )
                 }
             },

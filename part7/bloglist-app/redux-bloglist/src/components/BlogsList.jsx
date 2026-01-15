@@ -1,17 +1,17 @@
 import { useState } from 'react'
-import storage from '../services/storage'
 import {
     useGetBlogsQuery,
     useRemoveBlogMutation,
     useUpdateBlogMutation,
 } from '../reducers/blogApi'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { notify } from '../reducers/notificationReducer'
 
 const Blog = ({ blog }) => {
     const [visible, setVisible] = useState(false)
     const [updateBlog] = useUpdateBlogMutation()
     const [removeBlog] = useRemoveBlogMutation()
+    const user = useSelector(store => store.user)
     const dispatch = useDispatch()
 
     const handleLike = async () => {
@@ -53,7 +53,7 @@ const Blog = ({ blog }) => {
         marginBottom: 5,
     }
 
-    const canRemove = blog.user ? blog.user.username === storage.me() : true
+    const canRemove = blog.user ? blog.user.username === user.username : true
 
     return (
         <div style={style} className="blog">
