@@ -6,5 +6,15 @@ import store from './reducers/store'
 ReactDOM.createRoot(document.getElementById('root')).render(
     <Provider store={store}>
         <App />
-    </Provider>
+    </Provider>,
 )
+
+// TODO
+// 7.14 users view
+// 7.15 individual user view
+// 7.16 blog view
+// 7.17 navigation
+// 7.18 comments 1
+// 7.19 comments 2
+// 7.20 styles 1
+// 7.21 styles 2
