@@ -8,19 +8,6 @@ const Header = () => {
     return (
         <>
             <h2>blogs</h2>
-            {user && (
-                <div>
-                    {user.name} logged in
-                    <button
-                        onClick={() =>
-                            window.confirm('Уверены, что хотите выйти') &&
-                            dispatch(logout())
-                        }
-                    >
-                        logout
-                    </button>
-                </div>
-            )}
         </>
     )
 }

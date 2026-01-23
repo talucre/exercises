@@ -30,7 +30,7 @@ const NewBlog = ({ doCreate }) => {
             setUrl('')
         } catch {
             dispatch(
-                notify({ message: 'failed to create blog', type: 'error' })
+                notify({ message: 'failed to create blog', type: 'error' }),
             )
         }
     }

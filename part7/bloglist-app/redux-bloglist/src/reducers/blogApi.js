@@ -28,11 +28,7 @@ export const blogApi = createApi({
                     : [{ type: 'Blog', id: 'LIST' }],
         }),
         createBlog: build.mutation({
-            query: ({ id, ...body }) => ({
-                url: '',
-                method: 'POST',
-                body,
-            }),
+            query: ({ id, ...body }) => ({ url: '', method: 'POST', body }),
             invalidatesTags: [{ type: 'Blog', id: 'LIST' }],
         }),
         updateBlog: build.mutation({
@@ -50,22 +46,19 @@ export const blogApi = createApi({
                             undefined,
                             draft => {
                                 const index = draft.findIndex(
-                                    blog => blog.id === id
+                                    blog => blog.id === id,
                                 )
                                 if (index !== -1) {
                                     draft[index] = response.data
                                 }
-                            }
-                        )
+                            },
+                        ),
                     )
                 }
             },
         }),
         removeBlog: build.mutation({
-            query: id => ({
-                url: `/${id}`,
-                method: 'DELETE',
-            }),
+            query: id => ({ url: `/${id}`, method: 'DELETE' }),
             invalidatesTags: [{ type: 'Blog', id: 'LIST' }],
         }),
     }),

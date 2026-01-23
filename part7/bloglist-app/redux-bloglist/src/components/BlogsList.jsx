@@ -11,38 +11,8 @@ const Blog = ({ blog }) => {
     const [visible, setVisible] = useState(false)
     const [updateBlog] = useUpdateBlogMutation()
     const [removeBlog] = useRemoveBlogMutation()
-    const user = useSelector(store => store.user)
+    const { user } = useSelector(store => store.user)
     const dispatch = useDispatch()
-
-    const handleLike = async () => {
-        try {
-            const updatedData = {
-                ...blog,
-                likes: blog.likes + 1,
-            }
-            await updateBlog({ id: blog.id, ...updatedData }).unwrap()
-        } catch {
-            dispatch(notify({ message: 'failed to like blog', type: 'error' }))
-        }
-    }
-
-    const handleDelete = async () => {
-        try {
-            if (window.confirm(`Are you sure to delete blog ${blog.title}?`)) {
-                await removeBlog(blog.id).unwrap()
-                dispatch(
-                    notify({
-                        message: `blog ${blog.title} successfully removed`,
-                        type: 'success',
-                    })
-                )
-            }
-        } catch {
-            dispatch(
-                notify({ message: 'failed to delete blog', type: 'error' })
-            )
-        }
-    }
 
     const nameOfUser = blog.user ? blog.user.name : 'anonymous'
 
@@ -52,8 +22,6 @@ const Blog = ({ blog }) => {
         borderWidth: 1,
         marginBottom: 5,
     }
-
-    const canRemove = blog.user ? blog.user.username === user.username : true
 
     return (
         <div style={style} className="blog">
@@ -91,21 +59,6 @@ const Blog = ({ blog }) => {
 }
 
 const BlogsList = () => {
-    const { data, error, isLoading } = useGetBlogsQuery()
-    const dispatch = useDispatch()
-
-    if (isLoading) {
-        return <div>loading...</div>
-    }
-
-    if (error) {
-        console.log(error)
-        dispatch(notify({ message: 'something went wrong...', type: 'error' }))
-    }
-
-    const byLikes = (a, b) => b.likes - a.likes
-    const sortedBlogs = data.slice().sort(byLikes)
-
     return (
         <div>
             {sortedBlogs.map(blog => (

@@ -20,9 +20,7 @@ export const userApi = createApi({
             query: () => '/users',
             providesTags: () => [{ type: 'User', id: 'LIST' }],
         }),
-        getCurrentUser: build.query({
-            query: () => '/users/me',
-        }),
+        getCurrentUser: build.query({ query: () => '/users/me' }),
         login: build.mutation({
             query: credetials => ({
                 url: '/login',
@@ -38,7 +36,7 @@ export const userApi = createApi({
                             notify({
                                 message: 'Неверные логин или пароль',
                                 type: 'error',
-                            })
+                            }),
                         )
                         console.log('handled')
                         dispatch(errorHandled())

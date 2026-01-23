@@ -12,7 +12,7 @@ export const authErrorMiddleware = store => next => action => {
             notify({
                 message: 'Пожалуйста, выполните повторный вход',
                 type: 'error',
-            })
+            }),
         )
         store.dispatch(errorHandled())
     }
