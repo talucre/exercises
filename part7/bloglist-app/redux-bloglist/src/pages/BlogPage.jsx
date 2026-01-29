@@ -1,11 +1,18 @@
-import { useParams } from 'react-router-dom'
-import { useGetBlogsQuery } from '../reducers/blogApi'
+import { useNavigate, useParams } from 'react-router-dom'
+import {
+    useGetBlogsQuery,
+    useRemoveBlogMutation,
+    useUpdateBlogMutation,
+} from '../reducers/blogApi'
 import { useDispatch, useSelector } from 'react-redux'
 import { notify } from '../reducers/notificationReducer'
 
 const BlogPage = () => {
-    const { data: blogs, error, isLoading } = useGetBlogsQuery()
+    const { data: blogs, isLoading } = useGetBlogsQuery()
+    const [updateBlog] = useUpdateBlogMutation()
+    const [removeBlog] = useRemoveBlogMutation()
     const dispatch = useDispatch()
+    const navigate = useNavigate()
     const { blogId } = useParams()
     const { user } = useSelector(state => state.user)
 
@@ -17,11 +24,34 @@ const BlogPage = () => {
     const canRemove = blog.user ? blog.user.username === user.username : true
 
     const handleLike = async id => {
-        console.log('handle like')
+        try {
+            const updatedBlog = { ...blog, likes: blog.likes + 1 }
+            await updateBlog({ id, ...updatedBlog }).unwrap()
+        } catch {
+            dispatch(notify({ message: 'failed to like', type: 'error' }))
+        }
     }
 
     const handleDelete = async id => {
-        console.log('handle delete')
+        if (
+            !window.confirm(
+                `Are you sure you want to delete blog ${blog.title}?`,
+            )
+        )
+            return
+
+        try {
+            await removeBlog(id)
+            navigate(-1)
+            dispatch(
+                notify({
+                    message: `blog ${blog.title} was removed`,
+                    type: 'success',
+                }),
+            )
+        } catch (err) {
+            dispatch(notify(err))
+        }
     }
 
     return (
