@@ -1,6 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { notify } from './notificationReducer'
-import { errorHandled } from './errorReducer'
 
 export const userApi = createApi({
     reducerPath: 'userApi',
@@ -39,7 +38,6 @@ export const userApi = createApi({
                             }),
                         )
                         console.log('handled')
-                        dispatch(errorHandled())
                     } else {
                         throw error
                     }

@@ -1,4 +1,3 @@
-import { errorHandled } from '../reducers/errorReducer'
 import { notify } from '../reducers/notificationReducer'
 import { logout } from '../reducers/userReducer'
 
@@ -14,7 +13,6 @@ export const authErrorMiddleware = store => next => action => {
                 type: 'error',
             }),
         )
-        store.dispatch(errorHandled())
     }
     return next(action)
 }

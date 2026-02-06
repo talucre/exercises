@@ -10,10 +10,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 )
 
 // TODO
-//
-//
-// 7.16 blog view
-//
 // 7.18 comments 1
 // 7.19 comments 2
 // 7.20 styles 1

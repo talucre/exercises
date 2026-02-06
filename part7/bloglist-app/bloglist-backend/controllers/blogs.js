@@ -1,11 +1,12 @@
-const jwt = require('jsonwebtoken')
 const router = require('express').Router()
 const Blog = require('../models/blog')
-const User = require('../models/user')
+const Comment = require('../models/comment')
 const userExtractor = require('../utils/middleware').userExtractor
 
 router.get('/', async (request, response) => {
-    const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
+    const blogs = await Blog.find({})
+        .populate('user', { username: 1, name: 1 })
+        .populate('comments')
 
     response.json(blogs)
 })
@@ -34,6 +35,29 @@ router.post('/', userExtractor, async (request, response) => {
     response.status(201).json(savedBlog)
 })
 
+router.post('/comments/:id', userExtractor, async (request, response) => {
+    const comment = new Comment(request.body)
+    if (!comment.body) {
+        return response.status(400).json({ error: 'missing body' })
+    }
+
+    const blog = await Blog.findById(request.params.id)
+    if (!blog) {
+        return response.status(404).json({ error: 'blog not found' })
+    }
+
+    blog.comments = blog.comments.concat(comment._id)
+
+    await blog.save()
+    await comment.save()
+
+    const updatedBlog = await Blog.findById(request.params.id).populate(
+        'comments',
+    )
+
+    response.status(201).json(updatedBlog)
+})
+
 router.delete('/:id', userExtractor, async (request, response) => {
     const user = request.user
 
@@ -49,7 +73,7 @@ router.delete('/:id', userExtractor, async (request, response) => {
     await blog.deleteOne()
 
     user.blogs = user.blogs.filter(
-        b => b._id.toString() !== blog._id.toString()
+        b => b._id.toString() !== blog._id.toString(),
     )
 
     await user.save()
@@ -69,7 +93,9 @@ router.put('/:id', async (request, response) => {
 
     const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, {
         new: true,
-    }).populate('user', { username: 1, name: 1 })
+    })
+        .populate('user', { username: 1, name: 1 })
+        .populate('comments')
     response.json(updatedBlog)
 })
 

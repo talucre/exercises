@@ -57,6 +57,31 @@ export const blogApi = createApi({
                 }
             },
         }),
+        addComment: build.mutation({
+            query: ({ id, body }) => {
+                console.log(body)
+                return { url: `/comments/${id}`, method: 'POST', body }
+            },
+            async onQueryStarted({ id }, { dispatch, queryFulfilled }) {
+                const response = await queryFulfilled
+                if (response && response.data) {
+                    dispatch(
+                        blogApi.util.updateQueryData(
+                            'getBlogs',
+                            undefined,
+                            draft => {
+                                const index = draft.findIndex(
+                                    blog => blog.id === id,
+                                )
+                                if (index !== -1) {
+                                    draft[index] = response.data
+                                }
+                            },
+                        ),
+                    )
+                }
+            },
+        }),
         removeBlog: build.mutation({
             query: id => ({ url: `/${id}`, method: 'DELETE' }),
             invalidatesTags: [{ type: 'Blog', id: 'LIST' }],
@@ -69,4 +94,5 @@ export const {
     useCreateBlogMutation,
     useUpdateBlogMutation,
     useRemoveBlogMutation,
+    useAddCommentMutation,
 } = blogApi
