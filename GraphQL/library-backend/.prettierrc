@@ -3,6 +3,5 @@
     "useTabs": false,
     "semi": false,
     "singleQuote": true,
-    "objectWrap": "collapse",
     "arrowParens": "avoid"
 }
