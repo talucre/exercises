@@ -10,17 +10,21 @@ const PhoneForm = ({ setError }) => {
         onCompleted: data => {
             if (!data.editNumber) {
                 setError('person not found')
+            } else {
+                setName('')
+                setPhone('')
             }
         },
-        onError: error => setError(error.message),
     })
 
-    const submit = event => {
+    const submit = async event => {
         event.preventDefault()
 
-        changeNumber({ variables: { name, phone } })
-
-        setPhone('')
+        try {
+            await changeNumber({ variables: { name, phone } })
+        } catch (error) {
+            setError(error.message)
+        }
     }
 
     return (

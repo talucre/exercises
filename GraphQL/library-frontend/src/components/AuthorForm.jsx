@@ -25,7 +25,7 @@ const AuthorForm = () => {
     }
 
     if (error) {
-        return <div>something went wrong</div>
+        return <div style={{ color: 'red' }}>{error.message}</div>
     }
 
     return (
@@ -34,6 +34,9 @@ const AuthorForm = () => {
             <div>
                 name
                 <select value={name} onChange={e => setName(e.target.value)}>
+                    <option value="" disabled>
+                        select the author...
+                    </option>
                     {data.allAuthors.map(a => (
                         <option key={a.id} value={a.name}>
                             {a.name}
