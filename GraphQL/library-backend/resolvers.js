@@ -6,24 +6,47 @@ const resolvers = {
     Query: {
         bookCount: async () => Book.collection.countDocuments(),
         authorCount: async () => Author.collection.countDocuments(),
-        allBooks: (root, args) => {
-            // TODO refactor to use mongodb
-            const byAuthor = book => book.author === args.author
-            const byGenre = book => book.genres.includes(args.genre)
+        allBooks: async (root, args) => {
+            if (!args.author && !args.genre) {
+                return Book.find({}).populate('author')
+            }
 
             if (args.author && !args.genre) {
-                return books.filter(byAuthor)
+                const author = await Author.findOne({ name: args.author })
+
+                if (!author) {
+                    throw new GraphQLError(`No such author: ${args.author}`, {
+                        extensions: {
+                            code: 'BAD_USER_INPUT',
+                            invalidArgs: args.author,
+                        },
+                    })
+                }
+
+                return Book.find({ author: author._id }).populate('author')
             }
 
             if (!args.author && args.genre) {
-                return books.filter(byGenre)
+                return Book.find({ genres: args.genre }).populate('author')
             }
 
             if (args.author && args.genre) {
-                return books.filter(byAuthor).filter(byGenre)
-            }
+                const author = await Author.findOne({ name: args.author })
 
-            return books
+                if (!author) {
+                    throw new GraphQLError(`No such author: ${args.author}`, {
+                        extensions: {
+                            code: 'BAD_USER_INPUT',
+                            invalidArgs: args.author,
+                        },
+                    })
+                }
+
+                return Book.find({
+                    author: author._id,
+                    genres: args.genre,
+                }).populate('author')
+            }
         },
         allAuthors: async () => Author.find({}),
     },
