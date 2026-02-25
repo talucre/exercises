@@ -29,10 +29,7 @@ const resolvers = {
     },
     Author: {
         bookCount: async root => {
-            const count = await Book.find({
-                author: root.name,
-            }).countDocuments()
-            return count
+            return Book.countDocuments({ author: root.id })
         },
     },
     Mutation: {
@@ -80,11 +77,10 @@ const resolvers = {
             const author = await Author.findOne({ name: args.name })
 
             if (!author) {
-                throw new GraphQLError(`No such author ${error.message}`, {
+                throw new GraphQLError(`No such author ${args.name}`, {
                     extensions: {
                         code: 'BAD_USER_INPUT',
                         invalidArgs: args.name,
-                        error,
                     },
                 })
             }
